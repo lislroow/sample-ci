@@ -1,0 +1,41 @@
+# [eclipse]
+.project
+.settings
+.classpath
+.factorypath
+.externalToolBuilders
+
+# [draft]
+/docs
+/java
+
+# [vscode]
+.vscode
+
+
+# [idea]
+.idea
+
+
+# [maven]
+target
+.mvn
+
+
+# [gradle]
+.gradle
+build
+bin
+
+# [application]
+
+# [project]
+gpki
+
+# [sonarqube]
+.scannerwork
+.sonarlint
+
+# [draw.io]
+.$*.bkp
+*.drawio
