@@ -15,6 +15,7 @@ jobs:
         with:
           java-version: '17'
           distribution: 'corretto'
+          cache: 'maven'
           server-id: maven-snapshots
           settings-path: ${{ github.workspace }}
       - name: Restore Client Certificate
