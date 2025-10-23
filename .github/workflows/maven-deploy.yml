@@ -9,17 +9,17 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        users: actions/checkout@v3
+        uses: actions/checkout@v3
       - name: Set up JDK 17
-        users: actions/setup-java@v3
+        uses: actions/setup-java@v3
         with:
           java-version: '17'
           distribution: 'corretto'
           server-id: maven-snapshots
           settings-path: ${{ github.workspace }}
       - name: Restore Client Certificate
-          run: |
-            echo "${{ secrets.CLIENT_CERT_JKS }}" | base64 -d > client-cert.jks
+        run: |
+          echo "${{ secrets.CLIENT_CERT_JKS }}" | base64 -d > client-cert.jks
       - name: Set up Maven settings.xml
         run: |
           cat <<EOF > settings.xml
