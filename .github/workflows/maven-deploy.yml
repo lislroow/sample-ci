@@ -38,8 +38,6 @@ jobs:
             </servers>
           </settings>
           EOF
-      #- name: Build and Deploy with Maven
-      #  run: mvn clean deploy -DskipTests
       - name: Build and Deploy with Maven
         env:
           NEXUS_USERNAME: ${{ secrets.NEXUS_USERNAME }}
