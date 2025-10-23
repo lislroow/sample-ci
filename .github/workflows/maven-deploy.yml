@@ -1,0 +1,52 @@
+name: Maven Deploy to Nexus
+
+on:
+  push:
+    branches: ["main"]
+
+jobs:
+  build-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        users: actions/checkout@v3
+      - name: Set up JDK 17
+        users: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'corretto'
+          server-id: maven-snapshots
+          settings-path: ${{ github.workspace }}
+      - name: Restore Client Certificate
+            run: |
+              echo "${{ secrets.CLIENT_CERT_JKS }}" | base64 -d > client-cert.jks
+      - name: Set up Maven settings.xml
+        run: |
+          cat <<EOF > settings.xml
+          <settings>
+            <servers>
+              <server>
+                <id>maven-releases</id>
+                <username>${{ secrets.NEXUS_USERNAME }}</username>
+                <password>${{ secrets.NEXUS_PASSWORD }}</password>
+              </server>
+              <server>
+                <id>maven-snapshots</id>
+                <username>${{ secrets.NEXUS_USERNAME }}</username>
+                <password>${{ secrets.NEXUS_PASSWORD }}</password>
+              </server>
+            </servers>
+          </settings>
+          EOF
+      #- name: Build and Deploy with Maven
+      #  run: mvn clean deploy -DskipTests
+      - name: Build and Deploy with Maven
+        env:
+          NEXUS_USERNAME: ${{ secrets.NEXUS_USERNAME }}
+          NEXUS_PASSWORD: ${{ secrets.NEXUS_PASSWORD }}
+          CLIENT_CERT_PASSWORD: ${{ secrets.CLIENT_CERT_JKS_PASSWORD }}
+        run: |
+          mvn clean deploy -DskipTest -s settings.xml \
+            -Djavax.net.ssl.keyStore=client-cert.jks \
+            -Djavax.net.ssl.keyStorePassword=$CLIENT_CERT_PASSWORD
+
