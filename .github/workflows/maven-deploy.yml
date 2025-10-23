@@ -18,8 +18,8 @@ jobs:
           server-id: maven-snapshots
           settings-path: ${{ github.workspace }}
       - name: Restore Client Certificate
-            run: |
-              echo "${{ secrets.CLIENT_CERT_JKS }}" | base64 -d > client-cert.jks
+          run: |
+            echo "${{ secrets.CLIENT_CERT_JKS }}" | base64 -d > client-cert.jks
       - name: Set up Maven settings.xml
         run: |
           cat <<EOF > settings.xml
