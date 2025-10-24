@@ -54,10 +54,20 @@ jobs:
           mvn clean deploy -DskipTest -s settings.xml \
             -Djavax.net.ssl.keyStore=client-cert.jks \
             -Djavax.net.ssl.keyStorePassword=$CLIENT_CERT_PASSWORD
-      - name: Build Docker image
-        run: |
-          docker build -t docker.mgkim.net/app/sample-ci:latest .
-      - name: Push Docker image
+      #- name: Build Docker image
+      #  run: |
+      #    docker build -t docker.mgkim.net/app/sample-ci:latest .
+      #- name: Push Docker image
+      #  run: |
+      #    docker push docker.mgkim.net/app/sample-ci:latest
+      - name: Push Docker image (with cache)
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          push true
+          tags: docker.mgkim.net/app/sample-ci:latest
+          cache-from: type=registry,ref=docker.mgkim.net/app/sample-ci:cache
+          cache-to: type=registry,ref=docker.mgkim.net/app/sample-ci:cache,mode=max
         run: |
           docker push docker.mgkim.net/app/sample-ci:latest
       - name: Trigger Jenkins Job
