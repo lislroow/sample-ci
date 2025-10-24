@@ -21,6 +21,7 @@ jobs:
       - name: Restore Client Certificate
         run: |
           echo "${{ secrets.CLIENT_CERT_JKS }}" | base64 -d > client-cert.jks
+          echo "${{ secrets.CLIENT_CERT_P12 }}" | base64 -d > client-cert.p12
       - name: Set up Maven settings.xml
         run: |
           cat <<EOF > settings.xml
@@ -43,9 +44,20 @@ jobs:
         env:
           NEXUS_USERNAME: ${{ secrets.NEXUS_USERNAME }}
           NEXUS_PASSWORD: ${{ secrets.NEXUS_PASSWORD }}
-          CLIENT_CERT_PASSWORD: ${{ secrets.CLIENT_CERT_JKS_PASSWORD }}
+          CLIENT_CERT_PASSWORD: ${{ secrets.CLIENT_CERT_PASSWORD }}
         run: |
           mvn clean deploy -DskipTest -s settings.xml \
             -Djavax.net.ssl.keyStore=client-cert.jks \
             -Djavax.net.ssl.keyStorePassword=$CLIENT_CERT_PASSWORD
+      - name: Trigger Jenkins Job
+        env:
+          JENKINS_USER: ${{ secrets.JENKINS_USER }}
+          JENKINS_API_TOKEN: ${{ secrets.JENKINS_API_TOKEN }}
+          CLIENT_CERT_PASSWORD: ${{ secrets.CLIENT_CERT_PASSWORD }}
+        run: |
+          curl -X POST "https://jenkins.mgkim.net/job/deploy-sample-ci/build" \
+            --user "$JENKINS_USER:$JENKINS_API_TOKEN" \
+            --cert-type p12 \
+            --cert "client-cert.p12:$CLIENT_CERT_PASSWORD"
+          
 
