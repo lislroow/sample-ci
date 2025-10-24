@@ -59,7 +59,7 @@ jobs:
           docker build -t docker.mgkim.net/app/sample-ci:latest .
       - name: Push Docker image
         run: |
-          docker push docker.mgkim.net/sample-ci:latest
+          docker push docker.mgkim.net/app/sample-ci:latest
       - name: Trigger Jenkins Job
         env:
           JENKINS_USER: ${{ secrets.JENKINS_USER }}
