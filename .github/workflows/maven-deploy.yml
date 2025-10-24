@@ -64,7 +64,7 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           context: .
-          push true
+          push: true
           tags: docker.mgkim.net/app/sample-ci:latest
           cache-from: type=registry,ref=docker.mgkim.net/app/sample-ci:cache
           cache-to: type=registry,ref=docker.mgkim.net/app/sample-ci:cache,mode=max
