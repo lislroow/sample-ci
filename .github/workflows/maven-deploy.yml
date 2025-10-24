@@ -68,8 +68,6 @@ jobs:
           tags: docker.mgkim.net/app/sample-ci:latest
           cache-from: type=registry,ref=docker.mgkim.net/app/sample-ci:cache
           cache-to: type=registry,ref=docker.mgkim.net/app/sample-ci:cache,mode=max
-        run: |
-          docker push docker.mgkim.net/app/sample-ci:latest
       - name: Trigger Jenkins Job
         env:
           JENKINS_USER: ${{ secrets.JENKINS_USER }}
