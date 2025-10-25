@@ -28,7 +28,7 @@ WORKDIR /src
 COPY mvnw ./
 COPY .mvn ./.mvn
 COPY pom.xml ./
-COPY src ./
+COPY src ./src
 RUN chmod +x ./mvnw
 RUN pwd && ls -l && ls -l ./src/main/java
 RUN ./mvnw help:effective-pom
