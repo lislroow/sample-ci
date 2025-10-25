@@ -1,5 +1,6 @@
 pipeline {
   // agent { label 'docker-agent' }
+  agent any // jenkins host 에서 빌드 실행
   
   environment {
     NEXUS_CREDS = credentials('nexus-credentials')
@@ -10,7 +11,9 @@ pipeline {
   stages {
     stage('Build and Deploy docker') {
       steps {
-        withCredentials([usernamePassword(credentialsId: 'nexus-credentials', usernameVariable: 'NEXUS_USERNAME', passwordVariable: 'NEXUS_PASSWORD')]) {
+        withCredentials([usernamePassword(credentialsId: 'nexus-credentials',
+                                          usernameVariable: 'NEXUS_USERNAME',
+                                          passwordVariable: 'NEXUS_PASSWORD')]) {
           sh """
             docker login docker.mgkim.net -u $NEXUS_USERNAME -p $NEXUS_PASSWORD
             docker build \
@@ -23,7 +26,9 @@ pipeline {
     }
     stage('Run') {
       steps {
-        withCredentials([usernamePassword(credentialsId: 'nexus-credentials', usernameVariable: 'NEXUS_USERNAME', passwordVariable: 'NEXUS_PASSWORD')]) {
+        withCredentials([usernamePassword(credentialsId: 'nexus-credentials',
+                                          usernameVariable: 'NEXUS_USERNAME',
+                                          passwordVariable: 'NEXUS_PASSWORD')]) {
           sh """
             docker login docker.mgkim.net -u $NEXUS_USERNAME -p $NEXUS_PASSWORD
             docker pull docker.mgkim.net/docker-hosted/app/sample-ci:latest
