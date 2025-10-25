@@ -1,18 +1,43 @@
 FROM docker.mgkim.net/amazoncorretto:17-alpine-jdk-docker
 
 # internal build
+ARG APP_NAME
+ARG NEXUS_USERNAME
+ARG NEXUS_PASSWORD
+ARG CLIENT_CERT_PASSWORD
+RUN mkdir -p /root/.m2 && \
+  cat > /root/.m2/settings.xml <<EOF
+<settings>
+  <servers>
+    <server>
+      <id>maven-releases</id>
+      <username>${NEXUS_USERNAME}</username>
+      <password>${NEXUS_PASSWORD}</password>
+    </server>
+    <server>
+      <id>maven-snapshots</id>
+      <username>${NEXUS_USERNAME}</username>
+      <password>${NEXUS_PASSWORD}</password>
+    </server>
+  </servers>
+</settings>
+EOF
+COPY client-cert.jks /root/.m2
+
 WORKDIR /src
 COPY mvnw /src
 COPY .mvn /src/.mvn
 COPY pom.xml /src
 COPY src /src
 RUN chmod +x /src/mvnw
-RUN ./mvnw clean package -DskipTests
-RUN cp -p /src/target/sample-ci.jar /app/sample-ci.jar
+RUN ./mvnw clean package -DskipTests -s /root/.m2/settings.xml \
+  -Djavax.net.ssl.keyStore=/root/.m2/client-cert.jks \
+  -Djavax.net.ssl.keyStorePassword=${CLIENT_CERT_PASSWORD}
+RUN cp -p /src/target/${APP_NAME}.jar /app/${APP_NAME}.jar
 
 # external build
 #WORKDIR /app
-#COPY ./target/sample-ci.jar /app
+#COPY ./target/${APP_NAME}.jar /app
 
 ENTRYPOINT ["/bin/bash", "-c", "\
-  java -jar /app/sample-ci.jar"]
+  java -jar /app/${APP_NAME}.jar"]
