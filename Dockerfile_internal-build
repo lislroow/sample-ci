@@ -1,0 +1,18 @@
+FROM docker.mgkim.net/amazoncorretto:17-alpine-jdk-docker
+
+# internal build
+WORKDIR /src
+COPY mvnw /src
+COPY .mvn /src/.mvn
+COPY pom.xml /src
+COPY src /src
+RUN chmod +x /src/mvnw
+RUN ./mvnw clean package -DskipTests
+RUN cp -p /src/target/sample-ci.jar /app/sample-ci.jar
+
+# external build
+#WORKDIR /app
+#COPY ./target/sample-ci.jar /app
+
+ENTRYPOINT ["/bin/bash", "-c", "\
+  java -jar /app/sample-ci.jar"]

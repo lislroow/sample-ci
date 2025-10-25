@@ -1,0 +1,44 @@
+name: Docker Deploy to Nexus
+
+on:
+  push:
+    branches: ["main"]
+
+jobs:
+  build-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      
+      - name: Restore Client Certificate
+        run: |
+          echo "${{ secrets.CLIENT_CERT_P12 }}" | base64 -d > client-cert.p12
+      
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Login to Nexus Docker Registry
+        run: |
+          echo "${{ secrets.NEXUS_PASSWORD }}" | docker login docker.mgkim.net -u "${{ secrets.NEXUS_USERNAME }}" --password-stdin
+      
+      - name: Build and Push Docker image (with cache)
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: Dockerfile_internal-build
+          push: true
+          tags: docker.mgkim.net/app/sample-ci:latest
+          cache-from: type=registry,ref=docker.mgkim.net/app/sample-ci:cache
+          cache-to: type=registry,ref=docker.mgkim.net/app/sample-ci:cache,mode=max
+      
+      - name: Trigger Jenkins Job
+        env:
+          JENKINS_USER: ${{ secrets.JENKINS_USER }}
+          JENKINS_API_TOKEN: ${{ secrets.JENKINS_API_TOKEN }}
+          CLIENT_CERT_PASSWORD: ${{ secrets.CLIENT_CERT_PASSWORD }}
+        run: |
+          curl -X POST "https://jenkins.mgkim.net/job/deploy-sample-ci/build" \
+            --user "$JENKINS_USER:$JENKINS_API_TOKEN" \
+            --cert-type p12 \
+            --cert "client-cert.p12:$CLIENT_CERT_PASSWORD"
