@@ -32,10 +32,11 @@ COPY src ./src
 RUN chmod +x ./mvnw
 RUN pwd && ls -l && ls -l ./src/main/java
 RUN ./mvnw help:effective-pom
-RUN ./mvnw clean package -DskipTests -s /root/.m2/settings.xml \
+RUN ./mvnw clean deploy -DskipTests -s /root/.m2/settings.xml \
   -Djavax.net.ssl.keyStore=/root/.m2/client-cert.jks \
   -Djavax.net.ssl.keyStorePassword=${CLIENT_CERT_PASSWORD}
-RUN cp -p /src/target/${APP_NAME}.jar /app/${APP_NAME}.jar
+RUN echo "APP_NAME=$APP_NAME" && ls -l /src/target
+RUN cp -p /src/target/*.jar /app/$APP_NAME.jar
 
 # external build
 #WORKDIR /app
