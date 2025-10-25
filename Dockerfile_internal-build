@@ -25,23 +25,22 @@ EOF
 COPY client-cert.jks /root/.m2
 
 WORKDIR /src
+COPY pom.xml ./
 COPY mvnw ./
 COPY .mvn ./.mvn
-COPY pom.xml ./
-COPY src ./src
 RUN chmod +x ./mvnw
-RUN pwd && ls -l && ls -l ./src/main/java
-RUN ./mvnw help:effective-pom
-RUN ./mvnw clean deploy -DskipTests -s /root/.m2/settings.xml \
+RUN ./mvnw dependency:go-offline -B
+
+
+COPY src ./src
+RUN ./mvnw clean deploy -DskipTests -B -s /root/.m2/settings.xml \
   -Djavax.net.ssl.keyStore=/root/.m2/client-cert.jks \
   -Djavax.net.ssl.keyStorePassword=${CLIENT_CERT_PASSWORD}
-RUN echo "APP_NAME=$APP_NAME" && ls -l /src/target
 RUN mkdir -p /app \
-  && cp -p /src/target/*.jar /app/${APP_NAME}.jar
+  && cp -p /src/target/*.jar /app/sample-ci.jar
 
 # external build
 #WORKDIR /app
-#COPY ./target/${APP_NAME}.jar /app
+#COPY ./target/sample-ci.jar /app
 
-ENTRYPOINT ["/bin/bash", "-c", "\
-  java -jar /app/${APP_NAME}.jar"]
+ENTRYPOINT ["java", "-jar", "/app/sample-ci.jar"]
