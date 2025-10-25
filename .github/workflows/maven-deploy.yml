@@ -50,7 +50,7 @@ jobs:
           NEXUS_PASSWORD: ${{ secrets.NEXUS_PASSWORD }}
           CLIENT_CERT_PASSWORD: ${{ secrets.CLIENT_CERT_PASSWORD }}
         run: |
-          mvn clean deploy -DskipTest -s settings.xml \
+          ./mvnw clean deploy -DskipTest -s settings.xml \
             -Djavax.net.ssl.keyStore=client-cert.jks \
             -Djavax.net.ssl.keyStorePassword=$CLIENT_CERT_PASSWORD
       
