@@ -22,7 +22,7 @@ class PingPongController {
   
   @GetMapping("/ping")
   public String ping() {
-    log.info("request: /ping");
+    log.info("/ping");
     return "pong";
   }
 }
