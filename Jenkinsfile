@@ -1,5 +1,5 @@
 pipeline {
-  agent { label 'docker-agent' }
+  // agent { label 'docker-agent' }
   
   environment {
     NEXUS_CREDS = credentials('nexus-credentials')
