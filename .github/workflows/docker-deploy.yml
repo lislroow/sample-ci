@@ -13,6 +13,7 @@ jobs:
 
       - name: Restore Client Certificate
         run: |
+          echo "${{ secrets.CLIENT_CERT_JKS }}" | base64 -d > client-cert.jks
           echo "${{ secrets.CLIENT_CERT_P12 }}" | base64 -d > client-cert.p12
 
       - name: Set up Docker Buildx
