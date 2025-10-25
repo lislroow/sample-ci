@@ -22,15 +22,17 @@ pipeline {
       }
     }
     stage('Run') {
-      steps {
-        sh """
-          docker login docker.mgkim.net -u $NEXUS_USERNAME -p $NEXUS_PASSWORD
-          docker pull docker.mgkim.net/docker-hosted/app/sample-ci:latest
-          docker run -d \
-            --name sample-ci \
-            -p 9999:9999 \
-            docker.mgkim.net/docker-hosted/app/sample-ci:latest
-        """
+      withCredentials([usernamePassword(credentialsId: 'nexus-credentials', usernameVariable: 'NEXUS_USERNAME', passwordVariable: 'NEXUS_PASSWORD')]) {
+        steps {
+          sh """
+            docker login docker.mgkim.net -u $NEXUS_USERNAME -p $NEXUS_PASSWORD
+            docker pull docker.mgkim.net/docker-hosted/app/sample-ci:latest
+            docker run -d \
+              --name sample-ci \
+              -p 9999:9999 \
+              docker.mgkim.net/docker-hosted/app/sample-ci:latest
+          """
+        }
       }
     }
   }
