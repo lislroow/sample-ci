@@ -9,8 +9,8 @@ pipeline {
   
   stages {
     stage('Build and Deploy docker') {
-      withCredentials([usernamePassword(credentialsId: 'nexus-credentials', usernameVariable: 'NEXUS_USERNAME', passwordVariable: 'NEXUS_PASSWORD')]) {
-        steps {
+      steps {
+        withCredentials([usernamePassword(credentialsId: 'nexus-credentials', usernameVariable: 'NEXUS_USERNAME', passwordVariable: 'NEXUS_PASSWORD')]) {
           sh """
             docker login docker.mgkim.net -u $NEXUS_USERNAME -p $NEXUS_PASSWORD
             docker build \
@@ -22,8 +22,8 @@ pipeline {
       }
     }
     stage('Run') {
-      withCredentials([usernamePassword(credentialsId: 'nexus-credentials', usernameVariable: 'NEXUS_USERNAME', passwordVariable: 'NEXUS_PASSWORD')]) {
-        steps {
+      steps {
+        withCredentials([usernamePassword(credentialsId: 'nexus-credentials', usernameVariable: 'NEXUS_USERNAME', passwordVariable: 'NEXUS_PASSWORD')]) {
           sh """
             docker login docker.mgkim.net -u $NEXUS_USERNAME -p $NEXUS_PASSWORD
             docker pull docker.mgkim.net/docker-hosted/app/sample-ci:latest
