@@ -27,7 +27,7 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           context: .
-          file: Dockerfile_internal-build
+          file: Dockerfile
           push: true
           tags: docker.mgkim.net/app/sample-ci:latest
           cache-from: type=registry,ref=docker.mgkim.net/app/sample-ci:cache

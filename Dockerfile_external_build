@@ -1,0 +1,6 @@
+FROM docker.mgkim.net/amazoncorretto:17-alpine-jdk-docker
+
+WORKDIR /app
+COPY ./target/sample-ci.jar /app
+
+ENTRYPOINT ["java", "-jar", "/app/sample-ci.jar"]
