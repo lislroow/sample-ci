@@ -25,11 +25,13 @@ EOF
 COPY client-cert.jks /root/.m2
 
 WORKDIR /src
-COPY mvnw /src
-COPY .mvn /src/.mvn
-COPY pom.xml /src
-COPY src /src
-RUN chmod +x /src/mvnw
+COPY mvnw ./
+COPY .mvn ./.mvn
+COPY pom.xml ./
+COPY src ./
+RUN chmod +x ./mvnw
+RUN pwd && ls -l && ls -l ./src/main/java
+RUN ./mvnw help:effective-pom
 RUN ./mvnw clean package -DskipTests -s /root/.m2/settings.xml \
   -Djavax.net.ssl.keyStore=/root/.m2/client-cert.jks \
   -Djavax.net.ssl.keyStorePassword=${CLIENT_CERT_PASSWORD}
