@@ -19,7 +19,6 @@
 
 # [maven]
 target
-.mvn
 
 
 # [gradle]
