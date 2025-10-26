@@ -12,25 +12,40 @@ pipeline {
     NEXUS_CREDS = credentials('nexus-credentials')
     // sh 'echo "nexus user: $NEXUS_CREDS_USR"'
     // sh 'echo "nexus password: $NEXUS_CREDS_PSW"'
+    CERT_FILE = 'client-cert.jks'
   }
   
   stages {
+    stage('Prepare Cert') {
+      steps {
+        withCredentials([string(credentialsId: 'CLIENT_CERT_JKS_B64', variable: 'CLIENT_CERT_JKS_B64')]) {
+          sh """
+            echo "$CLIENT_CERT_JKS_B64" | base64 -d > ${CERT_FILE}
+          """
+        }
+      }
+    }
     stage('Build and Deploy docker') {
       steps {
-        withCredentials([usernamePassword(credentialsId: 'nexus-credentials',
-                                          usernameVariable: 'NEXUS_USERNAME',
-                                          passwordVariable: 'NEXUS_PASSWORD')]) {
+        withCredentials([
+          usernamePassword(credentialsId: 'nexus-credentials',
+                           usernameVariable: 'NEXUS_USERNAME',
+                           passwordVariable: 'NEXUS_PASSWORD'),
+          string(credentialsId: 'CLIENT_CERT_PASSWORD',
+                 variable: 'CLIENT_CERT_PASSWORD')]) {
           sh """
             docker login docker.mgkim.net -u $NEXUS_USERNAME -p $NEXUS_PASSWORD
             docker build \
+              --build-arg APP_NAME=sample-ci \
               --build-arg NEXUS_USERNAME=${NEXUS_USERNAME} \
               --build-arg NEXUS_PASSWORD=${NEXUS_PASSWORD} \
+              --build-arg CLIENT_CERT_PASSWORD=${CLIENT_CERT_PASSWORD} \
               -t docker.mgkim.net/app/sample-ci:latest .
           """
         }
       }
     }
-    stage('Run') {
+    stage('Run docker container') {
       steps {
         withCredentials([usernamePassword(credentialsId: 'nexus-credentials',
                                           usernameVariable: 'NEXUS_USERNAME',
