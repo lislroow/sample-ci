@@ -1,6 +1,4 @@
 pipeline {
-  // agent { label 'docker-agent' }
-  // agent any // jenkins host 에서 빌드 실행
   agent {
     docker {
       image 'docker.mgkim.net/jenkins/inbound-agent:rhel-ubi9-jdk17'
@@ -8,11 +6,14 @@ pipeline {
     }
   }
   
+  triggers {
+    githubPush()
+  }
+  
   environment {
     NEXUS_CREDS = credentials('nexus-credentials')
-    // sh 'echo "nexus user: $NEXUS_CREDS_USR"'
-    // sh 'echo "nexus password: $NEXUS_CREDS_PSW"'
     CERT_FILE = 'client-cert.jks'
+    DOCKER_IMAGE = 'docker.mgkim.net/app/sample-ci:latest'
   }
   
   stages {
@@ -76,8 +77,8 @@ EOF
             docker build \
               --build-arg APP_NAME=sample-ci \
               --build-arg CLIENT_CERT_PASSWORD=${CLIENT_CERT_PASSWORD} \
-              -t docker.mgkim.net/app/sample-ci:latest .
-            docker push docker.mgkim.net/app/sample-ci:latest
+              -t ${DOCKER_IMAGE} .
+            docker push ${DOCKER_IMAGE}
           """
         }
       }
@@ -86,11 +87,12 @@ EOF
     stage('Run docker container') {
       steps {
         sh """
-          docker pull docker.mgkim.net/app/sample-ci:latest
+          docker pull ${DOCKER_IMAGE}
+          docker rm -f sample-ci
           docker run -d \
             --name sample-ci \
             -p 9999:9999 \
-            docker.mgkim.net/app/sample-ci:latest
+            ${DOCKER_IMAGE}
         """
       }
     }
