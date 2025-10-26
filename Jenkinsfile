@@ -77,6 +77,7 @@ EOF
               --build-arg APP_NAME=sample-ci \
               --build-arg CLIENT_CERT_PASSWORD=${CLIENT_CERT_PASSWORD} \
               -t docker.mgkim.net/app/sample-ci:latest .
+            docker push docker.mgkim.net/app/sample-ci:latest
           """
         }
       }
