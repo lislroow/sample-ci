@@ -86,11 +86,11 @@ EOF
     stage('Run docker container') {
       steps {
         sh """
-          docker pull docker.mgkim.net/docker-hosted/app/sample-ci:latest
+          docker pull docker.mgkim.net/app/sample-ci:latest
           docker run -d \
             --name sample-ci \
             -p 9999:9999 \
-            docker.mgkim.net/docker-hosted/app/sample-ci:latest
+            docker.mgkim.net/app/sample-ci:latest
         """
       }
     }
