@@ -1,6 +1,12 @@
 pipeline {
   // agent { label 'docker-agent' }
-  agent any // jenkins host 에서 빌드 실행
+  // agent any // jenkins host 에서 빌드 실행
+  agent {
+    docker {
+      image 'docker.mgkim.net/jenkins/inbound-agent:rhel-ubi9-jdk17'
+      args '-v /var/run/docker.sock:/var/run/docker.sock'
+    }
+  }
   
   environment {
     NEXUS_CREDS = credentials('nexus-credentials')
