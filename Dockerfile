@@ -2,26 +2,9 @@ FROM docker.mgkim.net/amazoncorretto:17-alpine-jdk-docker
 
 # internal build
 ARG APP_NAME
-ARG NEXUS_USERNAME
-ARG NEXUS_PASSWORD
 ARG CLIENT_CERT_PASSWORD
-RUN mkdir -p /root/.m2 && \
-  cat > /root/.m2/settings.xml <<EOF
-<settings>
-  <servers>
-    <server>
-      <id>maven-releases</id>
-      <username>${NEXUS_USERNAME}</username>
-      <password>${NEXUS_PASSWORD}</password>
-    </server>
-    <server>
-      <id>maven-snapshots</id>
-      <username>${NEXUS_USERNAME}</username>
-      <password>${NEXUS_PASSWORD}</password>
-    </server>
-  </servers>
-</settings>
-EOF
+RUN mkdir -p /root/.m2
+COPY settings.xml /root/.m2
 COPY client-cert.jks /root/.m2
 
 WORKDIR /src
