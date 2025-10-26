@@ -25,7 +25,7 @@ pipeline {
             docker build \
               --build-arg NEXUS_USERNAME=${NEXUS_USERNAME} \
               --build-arg NEXUS_PASSWORD=${NEXUS_PASSWORD} \
-              -t docker.mgkim.net/app/sample-ci:latest
+              -t docker.mgkim.net/app/sample-ci:latest .
           """
         }
       }
