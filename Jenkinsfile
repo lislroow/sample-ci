@@ -20,8 +20,7 @@ pipeline {
       steps {
         withCredentials([string(credentialsId: 'CLIENT_CERT_JKS_B64', variable: 'CLIENT_CERT_JKS_B64')]) {
           sh """
-            which base64
-            echo "$CLIENT_CERT_JKS_B64" | base64 -d > ${CERT_FILE}
+            printf "%s" "$CLIENT_CERT_JKS_B64" | base64 -d > ${CERT_FILE}
           """
         }
       }
