@@ -5,17 +5,17 @@ pipeline {
       args '-v /var/run/docker.sock:/var/run/docker.sock'
     }
   }
-  
+
   triggers {
     githubPush()
   }
-  
+
   environment {
     NEXUS_CREDS = credentials('nexus-credentials')
     CERT_FILE = 'client-cert.jks'
     DOCKER_IMAGE = 'docker.mgkim.net/app/sample-ci:latest'
   }
-  
+
   stages {
     stage('Prepare Cert') {
       steps {
@@ -26,7 +26,7 @@ pipeline {
         }
       }
     }
-    
+
     stage('Prepare Maven settings.xml') {
       steps {
         withCredentials([
@@ -54,7 +54,7 @@ EOF
         }
       }
     }
-    
+
     stage('Login to nexus') {
       steps {
         withCredentials([
@@ -67,23 +67,23 @@ EOF
         }
       }
     }
-    
+
     stage('Build and Deploy docker') {
       steps {
         withCredentials([
           string(credentialsId: 'CLIENT_CERT_PASSWORD',
                  variable: 'CLIENT_CERT_PASSWORD')]) {
           sh """
-            docker build \
+            docker buildx build \
               --build-arg APP_NAME=sample-ci \
               --build-arg CLIENT_CERT_PASSWORD=${CLIENT_CERT_PASSWORD} \
-              -t ${DOCKER_IMAGE} .
-            docker push ${DOCKER_IMAGE}
+              -t ${DOCKER_IMAGE} \
+              --push .
           """
         }
       }
     }
-    
+
     stage('Run docker container') {
       steps {
         sh """
