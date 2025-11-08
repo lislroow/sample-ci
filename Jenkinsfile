@@ -2,7 +2,7 @@ pipeline {
   agent {
     docker {
       image 'docker.mgkim.net/jenkins/inbound-agent:rhel-ubi9-jdk17'
-      args '-v /var/run/docker.sock:/var/run/docker.sock'
+      args '-v /var/run/docker.sock:/var/run/docker.sock -u 1000:990'
     }
   }
 
