@@ -17,11 +17,9 @@ pipeline {
   }
 
   stages {
-    stages {
-      stage('Test Docker Access') {
-        steps {
-          sh 'id && docker ps'
-        }
+    stage('Test Docker Access') {
+      steps {
+        sh 'id && docker ps'
       }
     }
 
