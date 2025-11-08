@@ -17,6 +17,14 @@ pipeline {
   }
 
   stages {
+    stages {
+      stage('Test Docker Access') {
+        steps {
+          sh 'id && docker ps'
+        }
+      }
+    }
+
     stage('Prepare Cert') {
       steps {
         withCredentials([string(credentialsId: 'CLIENT_CERT_JKS_B64', variable: 'CLIENT_CERT_JKS_B64')]) {
